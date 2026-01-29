@@ -19,7 +19,7 @@ public class PremiumSubscriptionService {
         this.premiumSubscriptionRepository = premiumSubscriptionRepository;
     }
 
-    public void subscribe(User user, SubscriptionPlan planType) {
+    public PremiumSubscription subscribe(User user, SubscriptionPlan planType) {
 
         // prevent duplicate active subscription
         boolean alreadyActive =
@@ -42,6 +42,16 @@ public class PremiumSubscriptionService {
             subscription.setEndDate(LocalDate.now().plusYears(1));
         }
 
+        return premiumSubscriptionRepository.save(subscription);
+    }
+
+    public void cancelSubscription(User user) {
+        PremiumSubscription subscription =
+                premiumSubscriptionRepository.findByUserAndActiveTrue(user)
+                        .orElseThrow(() -> new RuntimeException("No active subscription found"));
+
+        subscription.setActive(false);
+        subscription.setAutoRenew(false);
         premiumSubscriptionRepository.save(subscription);
     }
 }

@@ -12,7 +12,12 @@ export interface UpdateProfileRequest {
 
 export interface SubscriptionResponse {
   message: string;
-  premiumExpiry: Date;
+  subscriptionId?: number;
+  planType?: string;
+  startDate?: string;
+  endDate?: string;
+  active?: boolean;
+  autoRenew?: boolean;
 }
 
 @Injectable({

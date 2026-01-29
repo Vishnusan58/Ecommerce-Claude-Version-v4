@@ -142,11 +142,12 @@ export class ProfileComponent implements OnInit {
     this.profileService.subscribePremium().subscribe({
       next: (response) => {
         this.isSubscribing = false;
-        if (this.user) {
+        if (this.user && response.endDate) {
           this.user.premiumStatus = true;
-          this.user.premiumExpiry = response.premiumExpiry;
+          this.user.premiumExpiry = new Date(response.endDate);
         }
-        this.snackBar.open('Welcome to Premium! Enjoy your benefits.', 'Close', { duration: 5000 });
+        const message = response.message || 'Welcome to Premium! Enjoy your benefits.';
+        this.snackBar.open(message, 'Close', { duration: 5000 });
       },
       error: (error) => {
         this.isSubscribing = false;
