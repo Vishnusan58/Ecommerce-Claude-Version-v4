@@ -16,12 +16,12 @@
           @if (discountPercent > 0) {
             <div class="discount-badge">-{{ discountPercent }}%</div>
           }
-          <img [src]="selectedImage" [alt]="product.name">
+          <img [src]="selectedImage" [alt]="product.name" (error)="$any($event.target).src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27300%27 viewBox=%270 0 300 300%27%3E%3Crect fill=%27%23f5f5f5%27 width=%27300%27 height=%27300%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 fill=%27%23999%27 font-family=%27sans-serif%27 font-size=%2716%27%3ENo Image%3C/text%3E%3C/svg%3E'">
         </div>
         @if (allImages.length > 1) {
           <div class="thumbnail-list">
             @for (img of allImages; track img) {
-              <img [src]="img" [alt]="product.name" (click)="selectImage(img)" [class.selected]="img === selectedImage">
+              <img [src]="img" [alt]="product.name" (click)="selectImage(img)" [class.selected]="img === selectedImage" (error)="$any($event.target).src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27300%27 viewBox=%270 0 300 300%27%3E%3Crect fill=%27%23f5f5f5%27 width=%27300%27 height=%27300%27/%3E%3Ctext x=%2750%25%27 y=%2750%25%27 dominant-baseline=%27middle%27 text-anchor=%27middle%27 fill=%27%23999%27 font-family=%27sans-serif%27 font-size=%2716%27%3ENo Image%3C/text%3E%3C/svg%3E'">
             }
           </div>
         }
