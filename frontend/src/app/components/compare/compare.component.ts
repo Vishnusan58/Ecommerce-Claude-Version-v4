@@ -99,7 +99,7 @@ export class CompareComponent implements OnInit {
   getValue(product: Product | null, key: string): any {
     if (!product) return null;
     if (key === 'category') {
-      return product.category?.name ?? 'N/A';
+      return (product as any).categoryName ?? product.category?.name ?? 'N/A';
     }
     if (key === 'rating') {
       return this.getProductRating(product);

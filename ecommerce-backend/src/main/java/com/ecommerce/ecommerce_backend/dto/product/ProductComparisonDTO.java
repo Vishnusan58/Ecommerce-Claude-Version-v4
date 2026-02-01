@@ -9,6 +9,7 @@ public class ProductComparisonDTO {
     private double rating;
     private int stock;
     private int reviewCount;
+    private String categoryName;
 
     public ProductComparisonDTO() {}
 
@@ -68,5 +69,13 @@ public class ProductComparisonDTO {
 
     public void setReviewCount(int reviewCount) {
         this.reviewCount = reviewCount;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
