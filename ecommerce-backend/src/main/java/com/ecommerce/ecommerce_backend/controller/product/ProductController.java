@@ -88,6 +88,7 @@ public class ProductController {
                     dto.setRating(reviewRepository.getAverageRatingByProduct(p));
                     dto.setReviewCount((int) reviewRepository.countByProduct(p));
                     dto.setStock(p.getStockQuantity());
+                    dto.setCategoryName(p.getCategory() != null ? p.getCategory().getName() : "Uncategorized");
                     return dto;
                 }).collect(Collectors.toList());
     }
