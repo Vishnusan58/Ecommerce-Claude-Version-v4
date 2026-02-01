@@ -5,6 +5,7 @@ import com.ecommerce.ecommerce_backend.dto.product.ProductResponseDTO;
 import com.ecommerce.ecommerce_backend.dto.product.ProductSearchDTO;
 import com.ecommerce.ecommerce_backend.model.Product;
 import com.ecommerce.ecommerce_backend.model.User;
+import com.ecommerce.ecommerce_backend.repository.ReviewRepository;
 import com.ecommerce.ecommerce_backend.service.auth.AuthService;
 import com.ecommerce.ecommerce_backend.service.product.ProductService;
 import org.springframework.data.domain.Page;
@@ -20,11 +21,14 @@ public class ProductController {
 
     private final ProductService productService;
     private final AuthService authService;
+    private final ReviewRepository reviewRepository;
 
     public ProductController(ProductService productService,
-                             AuthService authService) {
+                             AuthService authService,
+                             ReviewRepository reviewRepository) {
         this.productService = productService;
         this.authService = authService;
+        this.reviewRepository = reviewRepository;
     }
 
 
@@ -80,7 +84,9 @@ public class ProductController {
                     dto.setName(p.getName());
                     dto.setPrice(p.getPrice());
                     dto.setDescription(p.getDescription());
-                    dto.setRating(p.getAverageRating());
+                    // Dynamically fetch actual review count and average rating
+                    dto.setRating(reviewRepository.getAverageRatingByProduct(p));
+                    dto.setReviewCount((int) reviewRepository.countByProduct(p));
                     dto.setStock(p.getStockQuantity());
                     return dto;
                 }).collect(Collectors.toList());
@@ -99,8 +105,13 @@ public class ProductController {
         dto.setPrice(product.getPrice());
         dto.setDiscountPercent(product.getDiscountPercent());
         dto.setStockQuantity(product.getStockQuantity());
-        dto.setAverageRating(product.getAverageRating());
-        dto.setReviewCount(product.getReviewCount());
+
+        // Dynamically fetch actual review count and average rating from database
+        long actualReviewCount = reviewRepository.countByProduct(product);
+        double actualAverageRating = reviewRepository.getAverageRatingByProduct(product);
+
+        dto.setAverageRating(actualAverageRating);
+        dto.setReviewCount((int) actualReviewCount);
         dto.setImageUrl(product.getImageUrl());
         dto.setCreatedAt(product.getCreatedAt());
 

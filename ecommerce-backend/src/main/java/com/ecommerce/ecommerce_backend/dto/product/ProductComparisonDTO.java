@@ -8,6 +8,7 @@ public class ProductComparisonDTO {
     private double price;
     private double rating;
     private int stock;
+    private int reviewCount;
 
     public ProductComparisonDTO() {}
 
@@ -59,5 +60,13 @@ public class ProductComparisonDTO {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
     }
 }
