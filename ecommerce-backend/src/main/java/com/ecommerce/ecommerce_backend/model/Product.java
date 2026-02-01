@@ -18,6 +18,7 @@ public class Product {
     private Double originalPrice;
     private int stockQuantity;
     private double averageRating;
+    private int reviewCount;
     private LocalDateTime createdAt;
     private double discountPercent;
     private String imageUrl;
@@ -70,6 +71,9 @@ public class Product {
 
     public double getAverageRating() { return averageRating; }
     public void setAverageRating(double averageRating) { this.averageRating = averageRating; }
+
+    public int getReviewCount() { return reviewCount; }
+    public void setReviewCount(int reviewCount) { this.reviewCount = reviewCount; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
