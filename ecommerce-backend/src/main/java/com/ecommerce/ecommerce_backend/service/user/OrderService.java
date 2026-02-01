@@ -18,17 +18,20 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final CartRepository cartRepository;
     private final PremiumSubscriptionRepository premiumSubscriptionRepository;
+    private final ProductRepository productRepository;
 
     public OrderService(OrderRepository orderRepository,
                         OrderItemRepository orderItemRepository,
                         CartItemRepository cartItemRepository,
                         CartRepository cartRepository,
-                        PremiumSubscriptionRepository premiumSubscriptionRepository) {
+                        PremiumSubscriptionRepository premiumSubscriptionRepository,
+                        ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartRepository = cartRepository;
         this.premiumSubscriptionRepository = premiumSubscriptionRepository;
+        this.productRepository = productRepository;
     }
 
     // Original method signature for backward compatibility
@@ -51,7 +54,16 @@ public class OrderService {
             throw new RuntimeException("Cart is empty");
         }
 
-        // 2️⃣ Calculate total product amount
+        // 2️⃣ Validate stock availability for all items
+        for (CartItem item : cartItems) {
+            Product product = item.getProduct();
+            if (product.getStockQuantity() < item.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getName() +
+                        ". Available: " + product.getStockQuantity() + ", Requested: " + item.getQuantity());
+            }
+        }
+
+        // 3️⃣ Calculate total product amount
         double totalAmount = 0;
         for (CartItem item : cartItems) {
             totalAmount += item.getProduct().getPrice() * item.getQuantity();
@@ -101,18 +113,23 @@ public class OrderService {
         // 🔟 Save order first
         Order savedOrder = orderRepository.save(order);
 
-        // 1️⃣1️⃣ Create order items
+        // 1️⃣1️⃣ Create order items and reduce stock
         for (CartItem cartItem : cartItems) {
+            Product product = cartItem.getProduct();
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setSeller(cartItem.getProduct().getSeller());
+            orderItem.setProduct(product);
+            orderItem.setSeller(product.getSeller());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getProduct().getPrice());
+            orderItem.setPrice(product.getPrice());
             orderItem.setDiscountAtPurchase(0);
 
             orderItemRepository.save(orderItem);
+
+            // Reduce stock quantity
+            product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
+            productRepository.save(product);
         }
 
         // 1️⃣2️⃣ Clear cart after successful order
@@ -141,6 +158,14 @@ public class OrderService {
         }
         if (order.getStatus() == OrderStatus.CANCELLED) {
             throw new RuntimeException("Order is already cancelled");
+        }
+
+        // Restore stock for all order items
+        List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+        for (OrderItem orderItem : orderItems) {
+            Product product = orderItem.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + orderItem.getQuantity());
+            productRepository.save(product);
         }
 
         order.setStatus(OrderStatus.CANCELLED);
