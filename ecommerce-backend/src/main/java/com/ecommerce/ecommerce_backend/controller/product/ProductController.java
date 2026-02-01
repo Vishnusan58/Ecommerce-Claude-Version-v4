@@ -100,6 +100,7 @@ public class ProductController {
         dto.setDiscountPercent(product.getDiscountPercent());
         dto.setStockQuantity(product.getStockQuantity());
         dto.setAverageRating(product.getAverageRating());
+        dto.setReviewCount(product.getReviewCount());
         dto.setImageUrl(product.getImageUrl());
         dto.setCreatedAt(product.getCreatedAt());
 
